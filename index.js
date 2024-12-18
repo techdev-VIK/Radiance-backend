@@ -66,9 +66,9 @@ async function readProducts() {
 }
 
 
-app.get('/readAllProducts', async(req, res) => {
+app.get('/allProducts', async(req, res) => {
     try {
-        const readAll = readProducts();
+        const readAll = await readProducts();
         if(readAll){
             res.json(readAll)
         }else{
