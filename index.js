@@ -109,6 +109,34 @@ app.get('/product/:productName', async(req, res) => {
 
 
 
+//Read by productType
+
+async function readyByType(productType) {
+    try {
+        const readType = await Radiance.findOne({productType: productType});
+        return readType;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+
+app.get('/product/type/:productType', async(req, res) => {
+    try {
+        const readByProType = await readyByType(req.body);
+
+        if(readByProType){
+            res.json(readByProType)
+        }else{
+            res.status(404).json({error: 'Failed to find products.'})
+        }
+    } catch (error) {
+        res.status(500).json({error: 'Failed to fetch data.'})
+    }
+})
+
+
 
 const PORT = 3000;
 
