@@ -13,7 +13,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-const {intializeDatabase} = require('./db/db.connect');
+const {initializeDatabase} = require('./db/db.connect');
 
 const Radiance = require('./models/radiance.models');
 
@@ -21,7 +21,7 @@ const Radiance = require('./models/radiance.models');
 //middleware
 app.use(express.json());
 
-intializeDatabase();
+initializeDatabase();
 
 
 app.get('/', async(req, res) => {
