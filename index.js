@@ -110,6 +110,35 @@ app.get('/users/readAll', async (req, res) => {
 })
 
 
+//get by username
+
+async function readByUsername(username){
+    try {
+        const readUser = await RadianceUsers.findOne({username});
+
+        return readUser;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+
+
+app.get('/users/read/:username', async(req, res) => {
+    try {
+        const readUsername = await readByUsername(req.params.username);
+
+        if(readUsername){
+            res.json(readUsername)
+        }else{
+            res.status(401).json({message: 'User not found'});
+        }
+    } catch (error) {
+        res.status(500).json({error})
+    }
+})
+
 
 // Create user of radiance
 
