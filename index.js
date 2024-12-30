@@ -15,13 +15,15 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-const SECRET_KEY = "supersecret";
+// const SECRET_KEY = "supersecret";
 
 const JWT_SECRET = "your_jwt_secret";
 
 const {initializeDatabase} = require('./db/db.connect');
 
 const Radiance = require('./models/radiance.models');
+
+const RadianceUsers = require('./models/users.models');
 
 
 //middleware
@@ -49,21 +51,97 @@ const verifyJWT = (req, res, next) => {
 }
 
 
-app.post('/admin/login', (req, res) => {
-    const {secret} = req.body;
+app.post('/admin/login', async (req, res) => {
+    try {
+        const {username, password} = req.body;
 
-    if(secret === SECRET_KEY){
-        const token = jwt.sign({role: "admin"}, JWT_SECRET, {expiresIn: "24h"});
+        const user = await RadianceUsers.findOne({username});
 
-        res.json({token});
-    }else{
-        res.json({message: "Invalid Secret"})
+        if(!user){
+            return res.status(404).json({message: "User not found."})
+        }
+
+
+        if(user.password !== password){
+            return res.status(401).json({message: "Invalid Password"})
+        }
+
+        const token = jwt.sign({userId: user._id}, JWT_SECRET, {expiresIn: "24h"});
+
+        res.json({token, message: "Login Success"});
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message: "Server Error", error})
     }
 })
 
 
 app.get('admin/api/data', verifyJWT, (req, res) => {
     res.json({message: "Protected route accessible"})
+})
+
+
+
+// get all users of radiance
+
+async function readUsers() {
+    try {
+        const readAll = await RadianceUsers.find();
+        return readAll;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+
+app.get('/users/readAll', async (req, res) => {
+    try {
+        const readAll = await readUsers();
+
+        if(readAll){
+            res.json(readAll)
+        }else{
+            res.status(404).json({error: 'Failed to get users'})
+        }
+    } catch (error) {
+        res.status(500).json({error: error})
+    }
+})
+
+
+
+// Create user of radiance
+
+
+async function createUser(user) {
+    try {
+        const newUser = new RadianceUsers(user);
+        await newUser.save();
+        return newUser
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+
+app.post('/users/createNew', async(req, res) => {
+    try {
+        const {username} = req.body;
+
+        const userExists = await RadianceUsers.findOne({username});
+
+        if(userExists){
+            return res.status(409).json({error: "This username Exists already, please pick a new one."})
+        }
+
+        const newUser = createUser(req.body);
+        res.status(200).json({message: 'User added successfully!', user: newUser});
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({error})
+    }
 })
 
 

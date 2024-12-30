@@ -2,6 +2,14 @@ const mongoose = require('mongoose');
 
 //create Schema
 const radianceUserSchema = new mongoose.Schema({
+    firstName:{
+        type: String,
+        require: true,
+    },
+    lastName:{
+        type: String,
+        require: true,
+    },
     username: {
         type: String,
         require: true,
@@ -10,19 +18,18 @@ const radianceUserSchema = new mongoose.Schema({
         type: String,
         require: true
     },
-    address: {
+    phoneNumber: {
         type: String,
         require: true
     },
+    address: 
+        {
+            type: String,
+            require: true
+        },
     alternateAddress: {
-        type: String,
-        require: true
-    },
-    phoneNUmber: {
-        type: String,
-
+        type: String
     }
-
 }, {
     timestamps: true,
 })
