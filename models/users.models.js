@@ -22,6 +22,10 @@ const radianceUserSchema = new mongoose.Schema({
         type: String,
         require: true
     },
+    emailAddress: {
+        type: String,
+        require: true
+    },
     address: 
         {
             type: String,
@@ -29,7 +33,10 @@ const radianceUserSchema = new mongoose.Schema({
         },
     alternateAddress: {
         type: String
-    }
+    },
+    imageUrl: {
+        type: String
+    },
 }, {
     timestamps: true,
 })
