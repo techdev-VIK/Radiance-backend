@@ -171,6 +171,35 @@ app.post('/users/createNew', async(req, res) => {
         console.log(error)
         res.status(500).json({error})
     }
+});
+
+
+//update an exisitng user:
+
+async function updateUser(userId, dataToUpdate) {
+    try {
+        const editUser = await RadianceUsers.findByIdAndUpdate(userId, dataToUpdate);
+
+        return editUser;
+
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+app.post('/user/edit/:userId', async(req, res) => {
+    try {
+        const editedUser = await updateUser(req.params.userId, req.body);
+
+        if(editedUser){
+            res.status(200).json({message: 'Data updated successfully', editedUser})
+        }else{
+            res.status(404).json({error: 'Failed to update the user.'})
+        }
+    } catch (error) {
+        res.status(500).json({error: "Failed to update data."})
+    }
 })
 
 
