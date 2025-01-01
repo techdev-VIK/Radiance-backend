@@ -218,13 +218,12 @@ async function deleteAddress(username, addressType) {
     }
 }
 
-app.delete('/delete/:username', async(req, res) => {
+app.update('/delete/:username', async(req, res) => {
     try {
 
         const {secondaryAddress} = req.body;
 
         
-
         const deletedAddress = deleteAddress(req.params.username, secondaryAddress);
 
         if(deletedAddress){
