@@ -205,7 +205,7 @@ app.post('/user/edit/:userId', async(req, res) => {
 
 async function deleteAddress(username, address) {
     try {
-        const deleteAddress = await RadianceUsers.findByIdAndDelete(username, dataToDelete({secondaryAddress : address}));
+        const deleteAddress = await RadianceUsers.findOneAndDelete(username, dataToDelete({secondaryAddress : address}));
 
         return deleteAddress;
 
