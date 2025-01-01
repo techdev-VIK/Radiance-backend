@@ -203,9 +203,12 @@ app.post('/user/edit/:userId', async(req, res) => {
 })
 
 
-async function deleteAddress(username, address) {
+async function deleteAddress(username, addressType) {
     try {
-        const deleteAddress = await RadianceUsers.findOneAndDelete(username, dataToDelete({secondaryAddress : address}));
+        const update = {};
+        update[addressType] = 1;
+
+        const deleteAddress = await RadianceUsers.findOneAndUpdate({username: username}, {$unset: {[addressType] : ""} }, {new: true});
 
         return deleteAddress;
 
@@ -217,7 +220,12 @@ async function deleteAddress(username, address) {
 
 app.delete('/delete/:username', async(req, res) => {
     try {
-        const deletedAddress = deleteAddress(req.params.username, req.body);
+
+        const {secondaryAddress} = req.body;
+
+        
+
+        const deletedAddress = deleteAddress(req.params.username, secondaryAddress);
 
         if(deletedAddress){
             res.status(200).json({message: "Address Deleted", deletedAddress})
