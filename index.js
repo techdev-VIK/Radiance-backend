@@ -222,7 +222,7 @@ app.delete('/delete/:username', async(req, res) => {
         const {addressType} = req.body;
 
         
-        const deletedAddress = deleteAddress(req.params.username, addressType);
+        const deletedAddress = await deleteAddress(req.params.username, addressType);
 
         if(deletedAddress){
             res.status(200).json({message: "Address Deleted", deletedAddress})
