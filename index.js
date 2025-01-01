@@ -218,7 +218,7 @@ async function deleteAddress(username, addressType) {
     }
 }
 
-app.update('/delete/:username', async(req, res) => {
+app.post('/delete/:username', async(req, res) => {
     try {
 
         const {secondaryAddress} = req.body;
