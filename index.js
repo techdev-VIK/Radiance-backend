@@ -203,6 +203,37 @@ app.post('/user/edit/:userId', async(req, res) => {
 })
 
 
+async function deleteAddress(username, address) {
+    try {
+        const deleteAddress = await RadianceUsers.findByIdAndDelete(username, dataToDelete({secondaryAddress : address}));
+
+        return deleteAddress;
+
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+app.delete('/delete/:username', async(req, res) => {
+    try {
+        const deletedAddress = deleteAddress(req.params.username, req.body);
+
+        if(deletedAddress){
+            res.status(200).json({message: "Address Deleted", deletedAddress})
+        }else{
+            res.status(404).json({error: "Failed to Delete Address."})
+        }
+
+    } catch (error) {
+        res.status(500).json({error: "Failed to delete address."})
+    }
+})
+
+
+
+
+
 app.get('/', async(req, res) => {
     res.send('Welcome to Radiance Web Application!')
 });
