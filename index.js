@@ -159,11 +159,11 @@ app.post('/users/createNew', async(req, res) => {
     try {
         const {username} = req.body;
 
-        // const userExists = await RadianceUsers.findOne({username});
+        const userExists = await RadianceUsers.findOne({username});
 
-        // if(userExists){
-        //     return res.status(409).json({error: "This username Exists already, please pick a new one."})
-        // }
+        if(userExists){
+            return res.status(409).json({error: "This username Exists already, please pick a new one."})
+        }
 
         const newUser = createUser(req.body);
         res.status(200).json({message: 'User added successfully!', user: newUser});
