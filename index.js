@@ -15,7 +15,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// const SECRET_KEY = "supersecret";
 
 const JWT_SECRET = "your_jwt_secret";
 
@@ -236,7 +235,81 @@ app.delete('/delete/:username', async(req, res) => {
 })
 
 
+//For Adding otherAddresses
 
+async function addOtherAddress(username, newAddress){
+    try {
+        const updatedUser = await RadianceUsers.findOneAndUpdate(
+            {username},
+            {$push: {otherAddresses: newAddress}},
+            {new: true}
+        );
+        return updatedUser;
+
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+app.post('/add/otherAddress/:username', async(req, res) => {
+    try {
+        const {newAddress} = req.body;
+
+        if(!newAddress){
+            return res.status(400).json({error: "Address is required"})
+        }
+
+        const updatedUser = await addOtherAddress(req.params.username, newAddress);
+
+        if(updatedUser){
+            res.status(200).json({message: "Address added successfully", updatedUser})
+        }else{
+            res.status(404).json({error: "User not found"})
+        }
+    } catch (error) {
+        res.status(500).json({ error: "Failed to add address." });
+    }
+})
+
+
+
+//For deleteing OtherAddress
+
+async function deleteOtherAddress(username, addressToRemove) {
+    try {
+        const updatedUser = await RadianceUsers.findOneAndUpdate(
+            {username},
+            {$pull: {otherAddresses: addressToRemove}},
+            {new: true}
+        )
+
+        return updatedUser;
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+app.delete('/delete/otherAddress/:username', async(req, res) => {
+    try {
+        const {addressToRemove} = req.body;
+
+        if(!addressToRemove){
+            return res.status(400).json({error: "Address to remove is required"})
+        }
+
+        const updatedUser = await deleteOtherAddress(req.params.username, addressToRemove);
+
+        if(updatedUser){
+            res.status(200).json({message: "Address deleted successfully", updatedUser})
+        }else{
+            res.status(404).json({ error: "User not found or address not found." });
+        }
+    } catch (error) {
+        res.status(500).json({ error: "Failed to delete address." });
+    }
+})
 
 
 app.get('/', async(req, res) => {

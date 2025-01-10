@@ -34,6 +34,11 @@ const radianceUserSchema = new mongoose.Schema({
     secondaryAddress: {
         type: String
     },
+    otherAddresses: [
+        {
+            type: String,
+        }
+    ],
     imageUrl: {
         type: String
     },
