@@ -2,6 +2,8 @@ const express = require('express');
 
 const app = express();
 
+require('dotenv').config();
+
 const jwt = require('jsonwebtoken');
 
 
@@ -23,6 +25,8 @@ const {initializeDatabase} = require('./db/db.connect');
 const Radiance = require('./models/radiance.models');
 
 const RadianceUsers = require('./models/users.models');
+
+const RadianceOrder = require('./models/orders.models');
 
 
 //middleware
@@ -79,6 +83,57 @@ app.get('admin/api/data', verifyJWT, (req, res) => {
     res.json({message: "Protected route accessible"})
 })
 
+
+
+const addOrder = async(orderData) => {
+    try {
+        const newOrder = new RadianceOrder(orderData);
+        await newOrder.save();
+        return newOrder;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+
+
+app.post('/order/create', async(req, res) => {
+    try {
+        const newOrder = await addOrder(req.body);
+        res.status(200).json({message:'Order Added Successfully', order: newOrder})
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({error: 'Failed to add Order'})
+    }
+})
+
+
+
+const readAllOrders = async() => {
+    try {
+        const allOrders = await RadianceOrder.find().populate("userId");
+        return allOrders;
+    } catch (error) {
+        console.log("error", error)
+    }
+}
+
+
+
+app.get('/allOrders', async(req, res) => {
+    try {
+        const orders = await readAllOrders();
+
+        if(orders){
+            res.json(orders)
+        }else{
+            res.status(404).json({error: 'Failed to find Order'})
+        }
+    } catch (error) {
+        res.status(500).json({error: 'Failed to fetch Order.'})
+    }
+})
 
 
 // get all users of radiance
@@ -164,7 +219,7 @@ app.post('/users/createNew', async(req, res) => {
             return res.status(409).json({error: "This username Exists already, please pick a new one."})
         }
 
-        const newUser = createUser(req.body);
+        const newUser = await createUser(req.body);
         res.status(200).json({message: 'User added successfully!', user: newUser});
     } catch (error) {
         console.log(error)
@@ -383,7 +438,7 @@ async function readyByName(productName) {
 
 app.get('/product/:productName', async(req, res) => {
     try {
-        const readByProName = await readyByName(req.body);
+        const readByProName = await readyByName(req.params.productName);
 
         if(readByProName){
             res.json(readByProName)
@@ -412,7 +467,7 @@ async function readyByType(productType) {
 
 app.get('/product/type/:productType', async(req, res) => {
     try {
-        const readByProType = await readyByType(req.body);
+        const readByProType = await readyByType(req.params.productType);
 
         if(readByProType){
             res.json(readByProType)
