@@ -110,20 +110,25 @@ app.post('/order/create', async(req, res) => {
 
 
 
-const readAllOrders = async() => {
+const readAllOrders = async(username) => {
     try {
-        const allOrders = await RadianceOrder.find().populate("userId");
-        return allOrders;
+        const allOrders = await RadianceOrder.find().populate({
+            path: "userId",
+            match: {username},
+        });
+        return allOrders.filter(order => order.userId != null);
     } catch (error) {
-        console.log("error", error)
+        console.log("error", error);
+        throw error;
     }
 }
 
 
 
-app.get('/allOrders', async(req, res) => {
+app.get('/allOrders/:username', async(req, res) => {
+    const {username} = req.params;
     try {
-        const orders = await readAllOrders();
+        const orders = await readAllOrders(username);
 
         if(orders){
             res.json(orders)
