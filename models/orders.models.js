@@ -11,7 +11,7 @@ const orderSchema = new mongoose.Schema({
 
     items: [
         {
-            productId: {
+            itemId: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'Radiance',
                 required: true,

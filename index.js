@@ -87,8 +87,11 @@ app.get('admin/api/data', verifyJWT, (req, res) => {
 
 const addOrder = async(orderData) => {
     try {
-        const newOrder = new RadianceOrder(orderData);
+        const newOrder = new RadianceOrder(orderData)
         await newOrder.save();
+
+        await newOrder.populate("items.itemId");
+
         return newOrder;
     } catch (error) {
         console.log(error);
