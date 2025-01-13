@@ -118,7 +118,7 @@ const readAllOrders = async(username) => {
         const allOrders = await RadianceOrder.find().populate({
             path: "userId",
             match: {username},
-        });
+        }).populate("items.itemId");
         return allOrders.filter(order => order.userId != null);
     } catch (error) {
         console.log("error", error);
